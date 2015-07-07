@@ -11,14 +11,22 @@
       this.asset = this.add.sprite(this.game.width * 0.5 - 110, this.game.height * 0.5 - 10, 'preloader');
       this.load.setPreloadSprite(this.asset);
 
-      // this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
-      // this.loadResources();
+      this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
+      this.loadResources();
+      this.game.time.advancedTiming = true;
+
+      // Add and enable the plug-in.
+      this.game.plugins.add(new Phaser.Plugin.Isometric(this.game));
+      // This is used to set a game canvas-based offset for the 0, 0, 0 isometric coordinate - by default
+      // this point would be at screen coordinates 0, 0 (top left) which is usually undesirable.
+      this.game.iso.anchor.setTo(0.5, 0.2);
 
       this.ready = true;
     },
 
     loadResources: function () {
       // load your assets here
+      this.game.load.image('tile', '../assets/tile.png');
     },
 
     create: function () {
