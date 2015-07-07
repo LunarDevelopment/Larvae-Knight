@@ -1,16 +1,72 @@
-(function() {
+(function () {
   'use strict';
 
   function Game() {}
-  var isoGroup, cursorPos, cursor;
+  var isoGroup, cursorPos, cursor, water = [];
   Game.prototype = {
     create: function () {
       var myself = this;
       // Create a group for our tiles.
       isoGroup = myself.game.add.group();
 
+      // we won't really be using IsoArcade physics, but I've enabled it anyway so the debug bodies can be seen
+      isoGroup.enableBody = true;
+      //isoGroup.physicsBodyType = Phaser.Plugin.Isometric.ISOARCADE;
+
+      var tileArray = [];
+      tileArray[0] = 'water';
+      tileArray[1] = 'sand';
+      tileArray[2] = 'grass';
+      tileArray[3] = 'stone';
+      tileArray[4] = 'wood';
+      tileArray[5] = 'watersand';
+      tileArray[6] = 'grasssand';
+      tileArray[7] = 'sandstone';
+      tileArray[8] = 'bush1';
+      tileArray[9] = 'bush2';
+      tileArray[10] = 'mushroom';
+      tileArray[11] = 'wall';
+      tileArray[12] = 'window';
+
+      var tiles = [
+            9, 2, 1, 1, 4, 4, 1, 6, 2, 10, 2,
+            2, 6, 1, 0, 4, 4, 0, 0, 2, 2, 2,
+            6, 1, 0, 0, 4, 4, 0, 0, 8, 8, 2,
+            0, 0, 0, 0, 4, 4, 0, 0, 0, 9, 2,
+            0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0,
+            11, 11, 12, 11, 3, 3, 11, 12, 11, 11, 11,
+            3, 7, 3, 3, 3, 3, 3, 3, 7, 3, 3,
+            7, 1, 7, 7, 3, 3, 7, 7, 1, 1, 7
+        ];
+
+      var size = 32;
+
+      var i = 0,
+        tile;
+      for (var y = size; y <= myself.game.physics.isoArcade.bounds.frontY - size; y += size) {
+        for (var x = size; x <= myself.game.physics.isoArcade.bounds.frontX - size; x += size) {
+          // this bit would've been so much cleaner if I'd ordered the tileArray better, but I can't be bothered fixing it :P
+          tile = myself.game.add.isoSprite(x, y, tileArray[tiles[i]].match('water') ? 0 : myself.game.rnd.pick([2, 3, 4]), 'tileset', tileArray[tiles[i]], isoGroup);
+          tile.anchor.set(0.5, 1);
+          tile.smoothed = false;
+          tile.body.moves = false;
+          if (tiles[i] === 4) {
+            tile.isoZ += 6;
+          }
+          if (tiles[i] <= 10 && (tiles[i] < 5 || tiles[i] > 6)) {
+            tile.scale.x = myself.game.rnd.pick([-1, 1]);
+          }
+          if (tiles[i] === 0) {
+            water.push(tile);
+          }
+          i++;
+        }
+      }
       // Let's make a load of tiles on a grid.
-      myself.spawnTiles();
+      //myself.spawnTiles();
 
       // Provide a 3D position for the cursor
       cursorPos = new Phaser.Plugin.Isometric.Point3();
@@ -22,25 +78,34 @@
       // Update the cursor position.
       // It's important to understand that screen-to-isometric projection means you have to specify a z position manually, as this cannot be easily
       // determined from the 2D pointer position without extra trickery. By default, the z position is 0 if not set.
+      water.forEach(function (w) {
+        w.isoZ = (-2 * Math.sin((myself.game.time.now + (w.isoX * 7)) * 0.004)) + (-1 * Math.sin((myself.game.time.now + (w.isoY * 8)) * 0.005));
+        w.alpha = Phaser.Math.clamp(1 + (w.isoZ * 0.1), 0.2, 1);
+      });
       myself.game.iso.unproject(myself.game.input.activePointer.position, cursorPos);
       // Loop through all tiles and test to see if the 3D position from above intersects with the automatically generated IsoSprite tile bounds.
       isoGroup.forEach(function (tile) {
         var inBounds = tile.isoBounds.containsXY(cursorPos.x, cursorPos.y);
         // If it does, do a little animation and tint change.
         if (!tile.selected && inBounds) {
-          console.log('got one!');
+          console.log(water);
+          console.log(tile);
           tile.selected = true;
           tile.tint = 0x86bfda;
-          myself.game.add.tween(tile).to({ isoZ: 4 }, 200, Phaser.Easing.Quadratic.InOut, true);
+          myself.game.add.tween(tile).to({
+            isoZ: 4
+          }, 200, Phaser.Easing.Quadratic.InOut, true);
         }
         // If not, revert back to how it was.
         else if (tile.selected && !inBounds) {
           tile.selected = false;
           tile.tint = 0xffffff;
-          myself.game.add.tween(tile).to({ isoZ: 0 }, 200, Phaser.Easing.Quadratic.InOut, true);
+          myself.game.add.tween(tile).to({
+            isoZ: 0
+          }, 200, Phaser.Easing.Quadratic.InOut, true);
         }
       });
-      
+
       /**
        * Grid Based Movement taken from http://stackoverflow.com/questions/27785355/moving-a-sprite-along-a-pre-defined-path-in-phaser-io
        * @param {Function} cursors.left.isDown move along single axis
@@ -76,7 +141,7 @@
           tile.anchor.set(0.5, 0);
         }
       }
-    }
+    } 
   };
 
   window['larvaeknight'] = window['larvaeknight'] || {};
