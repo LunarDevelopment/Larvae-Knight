@@ -5,12 +5,12 @@
   var isoGroup, cursorPos, cursor;
   Game.prototype = {
     create: function () {
- 
+      var myself = this;
       // Create a group for our tiles.
-      isoGroup = this.game.add.group();
+      isoGroup = myself.game.add.group();
 
       // Let's make a load of tiles on a grid.
-      this.spawnTiles();
+      myself.spawnTiles();
 
       // Provide a 3D position for the cursor
       cursorPos = new Phaser.Plugin.Isometric.Point3();
@@ -22,7 +22,7 @@
       // Update the cursor position.
       // It's important to understand that screen-to-isometric projection means you have to specify a z position manually, as this cannot be easily
       // determined from the 2D pointer position without extra trickery. By default, the z position is 0 if not set.
-      this.game.iso.unproject(this.game.input.activePointer.position, cursorPos);
+      myself.game.iso.unproject(myself.game.input.activePointer.position, cursorPos);
       // Loop through all tiles and test to see if the 3D position from above intersects with the automatically generated IsoSprite tile bounds.
       isoGroup.forEach(function (tile) {
         var inBounds = tile.isoBounds.containsXY(cursorPos.x, cursorPos.y);
@@ -58,19 +58,21 @@
     },
 
     render: function () {
-      this.game.debug.text('Move your mouse around!', 2, 36, '#ffffff');
-      this.game.debug.text(this.game.time.fps || '--', 2, 14, '#a7aebe');
+      var myself = this;
+      myself.game.debug.text('Move your mouse around!', 2, 36, '#ffffff');
+      myself.game.debug.text(myself.game.time.fps || '--', 2, 14, '#a7aebe');
     },
     onInputDown: function () {
       //this.game.state.start('menu');
     },
     spawnTiles: function () {
+      var myself = this;
       var tile;
       for (var xx = 0; xx < 256; xx += 38) {
         for (var yy = 0; yy < 256; yy += 38) {
           // Create a tile using the new game.add.isoSprite factory method at the specified position.
           // The last parameter is the group you want to add it to (just like game.add.sprite)
-          tile = this.game.add.isoSprite(xx, yy, 0, 'tile', 0, isoGroup);
+          tile = myself.game.add.isoSprite(xx, yy, 0, 'tile', 0, isoGroup);
           tile.anchor.set(0.5, 0);
         }
       }
