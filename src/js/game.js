@@ -18,6 +18,7 @@
     },
 
     update: function () {
+      var myself = this;
       // Update the cursor position.
       // It's important to understand that screen-to-isometric projection means you have to specify a z position manually, as this cannot be easily
       // determined from the 2D pointer position without extra trickery. By default, the z position is 0 if not set.
@@ -30,13 +31,13 @@
           console.log('got one!');
           tile.selected = true;
           tile.tint = 0x86bfda;
-          this.game.add.tween(tile).to({ isoZ: 4 }, 200, Phaser.Easing.Quadratic.InOut, true);
+          myself.game.add.tween(tile).to({ isoZ: 4 }, 200, Phaser.Easing.Quadratic.InOut, true);
         }
         // If not, revert back to how it was.
         else if (tile.selected && !inBounds) {
           tile.selected = false;
           tile.tint = 0xffffff;
-          this.game.add.tween(tile).to({ isoZ: 0 }, 200, Phaser.Easing.Quadratic.InOut, true);
+          myself.game.add.tween(tile).to({ isoZ: 0 }, 200, Phaser.Easing.Quadratic.InOut, true);
         }
       });
       
