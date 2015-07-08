@@ -1,4 +1,4 @@
-(function() {
+(function () {
   'use strict';
 
   function Preloader() {
@@ -17,7 +17,7 @@
       this.game.debug.renderShadow = false;
       this.game.stage.disableVisibilityChange = true;
 
-      
+
       // Add and enable the plug-in.
       this.game.plugins.add(new Phaser.Plugin.Isometric(this.game));
       // This is used to set a game canvas-based offset for the 0, 0, 0 isometric coordinate - by default
@@ -40,7 +40,7 @@
 
     update: function () {
       // if (!!this.ready) {
-        this.game.state.start('menu');
+      this.game.state.start('menu');
       // }
     },
 

@@ -75,14 +75,16 @@
 
     update: function () {
       var myself = this;
-      // Update the cursor position.
-      // It's important to understand that screen-to-isometric projection means you have to specify a z position manually, as this cannot be easily
-      // determined from the 2D pointer position without extra trickery. By default, the z position is 0 if not set.
+             // Update the cursor position.
+        // It's important to understand that screen-to-isometric projection means you have to specify a z position manually, as this cannot be easily
+        // determined from the 2D pointer position without extra trickery. By default, the z position is 0 if not set.
+        myself.game.iso.unproject(myself.game.input.activePointer.position, cursorPos);
+
       water.forEach(function (w) {
         w.isoZ = (-2 * Math.sin((myself.game.time.now + (w.isoX * 7)) * 0.004)) + (-1 * Math.sin((myself.game.time.now + (w.isoY * 8)) * 0.005));
         w.alpha = Phaser.Math.clamp(1 + (w.isoZ * 0.1), 0.2, 1);
       });
-      myself.game.iso.unproject(myself.game.input.activePointer.position, cursorPos);
+     
       // Loop through all tiles and test to see if the 3D position from above intersects with the automatically generated IsoSprite tile bounds.
       isoGroup.forEach(function (tile) {
         var inBounds = tile.isoBounds.containsXY(cursorPos.x, cursorPos.y);
@@ -93,7 +95,8 @@
           tile.selected = true;
           tile.tint = 0x86bfda;
           myself.game.add.tween(tile).to({
-            isoZ: 4
+            // This causes the tile to raise and lower itself, however needs a fix because it breaks the current level design. if (wter) dont move, if land, read backup isoZ and return? or add tween to space.. 
+            //isoZ: 4
           }, 200, Phaser.Easing.Quadratic.InOut, true);
         }
         // If not, revert back to how it was.
@@ -101,7 +104,8 @@
           tile.selected = false;
           tile.tint = 0xffffff;
           myself.game.add.tween(tile).to({
-            isoZ: 0
+            // This causes the tile to raise and lower itself, however needs a fix because it breaks the current level design. if (wter) dont move, if land, read backup isoZ and return? or add tween to space.. 
+            //isoZ: 0
           }, 200, Phaser.Easing.Quadratic.InOut, true);
         }
       });
@@ -124,6 +128,9 @@
 
     render: function () {
       var myself = this;
+      isoGroup.forEach(function (tile) {
+        myself.game.debug.body(tile, 'rgba(189, 221, 235, 0.6)', false);
+      });
       myself.game.debug.text('Move your mouse around!', 2, 36, '#ffffff');
       myself.game.debug.text(myself.game.time.fps || '--', 2, 14, '#a7aebe');
     },
@@ -141,7 +148,7 @@
           tile.anchor.set(0.5, 0);
         }
       }
-    } 
+    }
   };
 
   window['larvaeknight'] = window['larvaeknight'] || {};
