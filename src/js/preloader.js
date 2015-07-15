@@ -23,19 +23,20 @@
       // This is used to set a game canvas-based offset for the 0, 0, 0 isometric coordinate - by default
       // this point would be at screen coordinates 0, 0 (top left) which is usually undesirable.
       this.game.physics.startSystem(Phaser.Plugin.Isometric.ISOARCADE);
-      this.game.iso.anchor.setTo(0.5, 0.2);
+      this.game.iso.anchor.setTo(0.5, 0.1);
 
       this.ready = true;
     },
 
     loadResources: function () {
       // load your assets here
+      this.game.load.atlasJSONHash('larvaeknight', '../assets/LarvaeKnight.png', '../assets/LarvaeKnight.json');
       this.game.load.atlasJSONHash('tileset', '../assets/tileset.png', '../assets/tileset.json');
       this.game.load.image('tile', '../assets/tile.png');
     },
 
     create: function () {
-
+      
     },
 
     update: function () {

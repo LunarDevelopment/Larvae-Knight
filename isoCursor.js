@@ -29,7 +29,7 @@
         isoGroup = game.add.group();
 
         // Let's make a load of tiles on a grid.
-        this.spawnTiles();
+        //this.spawnTiles();
 
         // Provide a 3D position for the cursor
         cursorPos = new Phaser.Plugin.Isometric.Point3();

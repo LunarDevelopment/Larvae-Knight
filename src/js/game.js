@@ -2,13 +2,14 @@
   'use strict';
 
   function Game() {}
-  var isoGroup, cursorPos, cursor, water = [];
+  var isoGroup, cursorPos, cursor, player, water = [];
   Game.prototype = {
     create: function () {
       var myself = this;
       // Create a group for our tiles.
       isoGroup = myself.game.add.group();
-
+      // Set the global gravity for IsoArcade.
+      myself.game.physics.isoArcade.gravity.setTo(0, 0, -500);
       // we won't really be using IsoArcade physics, but I've enabled it anyway so the debug bodies can be seen
       isoGroup.enableBody = true;
       //isoGroup.physicsBodyType = Phaser.Plugin.Isometric.ISOARCADE;
@@ -65,6 +66,30 @@
           i++;
         }
       }
+
+
+              // Create another cube as our 'player', and set it up just like the cubes above.
+        player = myself.game.add.isoSprite(128, 128, 0, 'larvaeknight', 'sprite15', isoGroup);
+        player.anchor.set(0.4);
+        myself.game.physics.isoArcade.enable(player);
+        player.body.collideWorldBounds = true;
+
+        // Set up our controls.
+        myself.cursors = myself.game.input.keyboard.createCursorKeys();
+
+        myself.game.input.keyboard.addKeyCapture([
+            Phaser.Keyboard.LEFT,
+            Phaser.Keyboard.RIGHT,
+            Phaser.Keyboard.UP,
+            Phaser.Keyboard.DOWN,
+            Phaser.Keyboard.SPACEBAR
+        ]);
+
+        var space = myself.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
+        space.onDown.add(function () {
+            player.body.velocity.z = 300;
+        }, myself);
       // Let's make a load of tiles on a grid.
       //myself.spawnTiles();
 
@@ -75,16 +100,16 @@
 
     update: function () {
       var myself = this;
-             // Update the cursor position.
-        // It's important to understand that screen-to-isometric projection means you have to specify a z position manually, as this cannot be easily
-        // determined from the 2D pointer position without extra trickery. By default, the z position is 0 if not set.
-        myself.game.iso.unproject(myself.game.input.activePointer.position, cursorPos);
+      // Update the cursor position.
+      // It's important to understand that screen-to-isometric projection means you have to specify a z position manually, as this cannot be easily
+      // determined from the 2D pointer position without extra trickery. By default, the z position is 0 if not set.
+      myself.game.iso.unproject(myself.game.input.activePointer.position, cursorPos);
 
       water.forEach(function (w) {
         w.isoZ = (-2 * Math.sin((myself.game.time.now + (w.isoX * 7)) * 0.004)) + (-1 * Math.sin((myself.game.time.now + (w.isoY * 8)) * 0.005));
         w.alpha = Phaser.Math.clamp(1 + (w.isoZ * 0.1), 0.2, 1);
       });
-     
+
       // Loop through all tiles and test to see if the 3D position from above intersects with the automatically generated IsoSprite tile bounds.
       isoGroup.forEach(function (tile) {
         var inBounds = tile.isoBounds.containsXY(cursorPos.x, cursorPos.y);
@@ -128,15 +153,16 @@
 
     render: function () {
       var myself = this;
-      isoGroup.forEach(function (tile) {
+      /*isoGroup.forEach(function (tile) {
         myself.game.debug.body(tile, 'rgba(189, 221, 235, 0.6)', false);
-      });
+      });*/
       myself.game.debug.text('Move your mouse around!', 2, 36, '#ffffff');
       myself.game.debug.text(myself.game.time.fps || '--', 2, 14, '#a7aebe');
     },
     onInputDown: function () {
       //this.game.state.start('menu');
-    },
+    }
+    /*,
     spawnTiles: function () {
       var myself = this;
       var tile;
@@ -149,6 +175,7 @@
         }
       }
     }
+    */
   };
 
   window['larvaeknight'] = window['larvaeknight'] || {};
