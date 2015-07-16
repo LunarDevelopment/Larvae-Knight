@@ -6,6 +6,9 @@
   Game.prototype = {
     create: function () {
       var myself = this;
+      
+      //  A more suitable underwater background color
+      myself.game.stage.backgroundColor = '#1873CE';
       // Create a group for our tiles.
       isoGroup = myself.game.add.group();
       // Set the global gravity for IsoArcade.
@@ -69,11 +72,13 @@
 
 
               // Create another cube as our 'player', and set it up just like the cubes above.
-        player = myself.game.add.isoSprite(128, 128, 0, 'larvaeknight', 'sprite15', isoGroup);
-        player.anchor.set(0.4);
+        player = myself.game.add.isoSprite(75, 138, 0, 'larvaeknight', 'sprite15', isoGroup);
+        player.animations.add('wbl', ['sprite17','sprite18'], 3, true, false);
+        player.anchor.set(0.4, 0.2);
         myself.game.physics.isoArcade.enable(player);
         player.body.collideWorldBounds = true;
-
+        
+        player.animations.play('wbl');
         // Set up our controls.
         myself.cursors = myself.game.input.keyboard.createCursorKeys();
 
